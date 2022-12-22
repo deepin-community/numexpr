@@ -1,0 +1,457 @@
+numexpr (2.7.3-2) unstable; urgency=medium
+
+  * Standards version bumped to 4.6.0 (no chenges).
+  * Drop the -dbg package (Closes: 994314).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 26 Sep 2021 08:53:14 +0000
+
+numexpr (2.7.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - drop 0001-Fix-tests-on-sparc64.patch, applied upstream
+  * debian/rules:
+    - update clean tergat
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 29 Aug 2021 17:42:17 +0000
+
+numexpr (2.7.2-2) unstable; urgency=medium
+
+  * debian/patches:
+    - new 0001-Fix-tests-on-sparc64.patch.
+      It is a backport of an upstream fix and only
+      impacts the test code, no changes in the library code.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 13 Feb 2021 07:36:03 +0000
+
+numexpr (2.7.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - add Testsuite: autopkgtest-pkg-python
+  * Updated debian/copyright file.
+  * Update standards version to 4.5.1, no changes needed.
+  * Updated watch file.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 30 Dec 2020 08:13:02 +0000
+
+numexpr (2.7.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - drop 0001-Use-the-corrent-interpreter-for-testing.patch,
+      applied upstream
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 05 Jan 2020 21:45:02 +0000
+
+numexpr (2.7.0-2) unstable; urgency=medium
+
+  * debian/control:
+    - explicitly set Rules-Requires-Root: no
+  * Update standards version to 4.4.1, no changes needed.
+  * Remove obsolete fields Name from debian/upstream/metadata.
+  * Fix day-of-week for changelog entries 1.3.1-2, 1.3.1-1.
+  * Replace deprecated ADTTMP with AUTOPKGTEST_TMP in debian/test/python*
+  * Drop python2 support (Closes: #937167).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 18 Dec 2019 07:19:39 +0000
+
+numexpr (2.7.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - new 0001-Use-the-corrent-interpreter-for-testing.patch
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 16 Aug 2019 05:28:05 +0000
+
+numexpr (2.6.9-2) unstable; urgency=medium
+
+  * Set compat to 12.
+  * Standard version bumped to 4.4.0 (no change).
+  * debian/rules:
+    - drop "-pie" form hardening flags
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 04 Aug 2019 06:47:41 +0000
+
+numexpr (2.6.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standard version bumped to 4.3.0, no change.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 30 Dec 2018 10:02:17 +0000
+
+numexpr (2.6.8-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standerd version bumped to 4.2.0 (no change).
+  * Remove the obsolete debian/pyversions file.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 25 Aug 2018 08:10:08 +0000
+
+numexpr (2.6.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standard version bumped to 4.1.4 (no change).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 04 May 2018 05:57:33 +0000
+
+numexpr (2.6.4-2) unstable; urgency=medium
+
+  * Standard version bumped to 4.1.3 (no change)
+  * Set compat to 11.
+  * debian/rules
+    - fix testing (Closes: #894623)
+  * debian/control
+    - update Vcs-* fields (salsa)
+  * Drop debian/source.lintian-overrides
+  * Add upstream metadata.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 02 Apr 2018 16:57:49 +0000
+
+numexpr (2.6.4-1) unstable; urgency=medium
+
+  * New upstream release
+  * Standard version bump to 4.1.1 (extra --> optional)
+  * debian/control
+    remove un-necessary Testsuite: autopkgtest
+  * Reformat debian/tests/control
+  * Add debian/source.lintian-overrides
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 19 Nov 2017 08:33:55 +0000
+
+numexpr (2.6.2-2) unstable; urgency=medium
+
+  * Restore -dbg packages
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 14 Aug 2017 18:13:26 +0000
+
+numexpr (2.6.2-1) unstable; urgency=medium
+
+  * New upstream release
+  * Standard version bumped to 4.0.0
+  * Switch to pybuild
+  * debian/patches:
+    - drop 0001-fix-test-on-powerpc-and-ppc64el.patch and
+      0002-numpy-1.12-compatibility.patch: applied upstream
+  * Drop -dbg package declaration (now debug packages are automatically
+    generated)
+  * debian/tests/python*:
+    - ensure that the test script returns the correct exit code
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 28 Jun 2017 20:21:19 +0000
+
+numexpr (2.6.1-4) unstable; urgency=medium
+
+  * debian/patches
+    - better version parsing in 0002-numpy-1.12-compatibility.patch.
+      Fix compatibility with numpy 1.12 (Closes: #852906)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 28 Jan 2017 10:32:00 +0000
+
+numexpr (2.6.1-3) unstable; urgency=high
+
+  * debian/patches
+    - new 0002-numpy-1.12-compatibility.patch to fix compatibility
+      with numpy 1.12 (Closes: #848771)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 24 Dec 2016 20:58:07 +0000
+
+numexpr (2.6.1-2) unstable; urgency=high
+
+  * debian/patches
+    - new patch to fix test failures on ppc64el and powerpc
+      See also upstream bug #224 (https://github.com/pydata/numexpr/issues/224)
+      Closes: #845082
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 30 Nov 2016 06:57:12 +0000
+
+numexpr (2.6.1-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/rules
+    - enable hardening flags
+  * debian/changes
+    - fixed "copyright Format" field
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 30 Jul 2016 10:39:36 +0000
+
+numexpr (2.6.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/rules
+    - add override_dh_auto_clean target
+  * debian/control
+    - standard version bumped to 3.9.8
+    - update dependency version according to cme hints
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 02 Jun 2016 18:49:17 +0000
+
+numexpr (2.5.0-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #813643)
+  * Standard version bumped to 3.9.7
+  * Fix Vcs-Git URL
+  * Updated debian/copyright: disambiguate MIT license type
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 06 Feb 2016 11:16:53 +0000
+
+numexpr (2.4.4-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add dependency from python(3)-pkg-resources to fix
+    autopkgtest failure
+  * Drop debian/patches/0001-Fix-test-suite.patch (applied upstream)
+  * Updathe the project URL in debian/control, debian/changelog and
+    debian/README.Debian
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 19 Sep 2015 18:26:38 +0000
+
+numexpr (2.4.3-1) unstable; urgency=medium
+
+  * New upstream release
+  * Fix dependencies of -dbg packages
+  * Fix debian/watch file
+  * debisn/control
+    - general reformatting (as suggested by cme)
+    - standards version bumped to 3.9.6 (no change)
+    - fix vcs-browser field
+    - drop deprecated XS-Testsuite parameter
+    - added python3-setuptools to build-deps
+  * New patch for fixing the test suite (Python 3 only)
+  * Drop debian/pycompat
+  * debian/copyright updated and cleanup
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 16 Aug 2015 12:51:08 +0200
+
+numexpr (2.4-1) unstable; urgency=medium
+
+  * New upstream release
+  * The watch file has been updated to point to the new project home
+  * Added autopkgtests
+  * debian/control
+    - fixed long description of python3-numexpr that mentioned pyepr
+      instead of numexpr (typo)
+    - added an explicit build dependency from dh-python
+  * debian/copyright
+    - update copyright dates
+    - added entry for the new numexpr/str-two-way.hpp file
+  * debian/patches
+    - drop all patches: no longer necessary or applied upstream
+  * debian/docs
+    - all docs have been renamed from .txt into .rst
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 04 Aug 2014 22:05:02 +0000
+
+numexpr (2.2.2-4) unstable; urgency=low
+
+  * Standard version dumped to 3.9.5 (no change)
+  * debian/control
+    - remove the Breaks field: compatibility with PyTables < 3.0 has
+      been restored in numexpr 2.2.2 (see
+      https://code.google.com/p/numexpr/wiki/ReleaseNotes)
+  * debian/rules
+    - fixed file conflict between python3-numexpr and
+      python3-numexpr-dbg packages (Closes: #735131)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 13 Jan 2014 10:38:06 +0000
+
+numexpr (2.2.2-3) unstable; urgency=medium
+
+  * debian/rules:
+    - run unittests in verbose mode
+  * debian/patches
+    - dropped patch: 0002-relax-test-on-sparc.patch
+      It does not actually fix the issue.
+    - new patch 0002-skip-threading-tests-on-sparc.patch
+      Skip all tests related to threading on sparc
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 09 Dec 2013 18:54:24 +0000
+
+numexpr (2.2.2-2) unstable; urgency=low
+
+  * New patch: 0002-relax-test-on-sparc.patch
+    Introduces a temporary workaround to fix a couple of test failiures
+    on sparc.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Tue, 26 Nov 2013 18:44:55 +0000
+
+numexpr (2.2.2-1) unstable; urgency=low
+
+  * New upstream release (fixes a build failure on s390)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 28 Sep 2013 09:03:27 +0000
+
+numexpr (2.2.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 09 Sep 2013 19:41:04 +0000
+
+numexpr (2.2-1) experimental; urgency=low
+
+  * New upstream release
+  * Added a link to extra license info for win32/pthread.* in the
+    copyright file
+  * debian/patches
+    - refresh all patches
+    - drop 0002-Pthread-license.patch (applied upstream)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 07 Sep 2013 15:38:16 +0000
+
+numexpr (2.1-1) experimental; urgency=low
+
+  * New upstream release
+  * Removed parches applied upstream:
+    0002-feature-forwarded-upstream-fix-FTBFS-on-Hurd-and-KFr.patch and
+    0003-Set-default-nthreads-to-one-on-sparc.patch
+  * Refresh remaining patches
+  * New patch: include the correct license statement in win32/pthread.*
+    comment headers
+  * Standards version bumped to 3.9.4 (no change)
+  * Compat set to 9
+  * New packages for python3 and python3-dbg (Closes: #683954)
+  * Install upstream changelog
+  * Re-enable unittests at build time on sparc
+  * The noopt option is now honored
+  * numexpr 2.1 breaks pythbles < 3.0
+  * The copyright file has been updated.
+  * Removed empty README.source file
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 27 Apr 2013 10:32:31 +0000
+
+numexpr (2.0.1-3) unstable; urgency=low
+
+  * Disable unittests at build time on sparc
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 21 Apr 2012 19:25:39 +0200
+
+numexpr (2.0.1-2) experimental; urgency=low
+
+  * Fixing versioned build-depends on numpy version of which
+    carries epoch -- now build-depends on >= 1:1.6.0
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 12 Mar 2012 21:59:50 -0400
+
+numexpr (2.0.1-1) experimental; urgency=low
+
+  [ Antonio Valentino ]
+  * New upstream release
+  * debian/patches
+    - dropped 0001-fix-unittests.patch (included upstream)
+    - 0001-debian-changes-1.3.1-1.patch (updated sequence number)
+    - 0003-feature-forwarded-upstream-fix-FTBFS-on-Hurd-and-KFr.patch
+      (refreshed and sequence number updated)
+  * debian/copyright
+    - updated author list and years
+    - checked with the cme tool
+  * debian/control
+    - build-depend on numpy >= 1.6
+  * debian/watch
+    - now point to the project site instead of pypi.python.org
+
+  [ Yaroslav Halchenko ]
+  * debian/gbp.conf
+    - build off experimental branch
+  * debian/control
+    - added myself to Uploaders
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 12 Mar 2012 11:39:04 -0400
+
+numexpr (1.4.2-3.2) unstable; urgency=low
+
+  * fix for real the FTBFS
+  * debian/patches
+    - 0003-feature-forwarded-upstream-fix-FTBFS-on-Hurd-and-KFr.patch (updated)
+
+ -- Picca Frédéric-Emmanuel <picca@debian.org>  Sun, 04 Mar 2012 13:57:37 +0100
+
+numexpr (1.4.2-3.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/patches
+    - patch series regenerated with gbp-pq
+    - 0001-fix-unittests.patch (regenerated)
+    - 0002-debian-changes-1.3.1-1.patch (regenerated)
+    - 0003-feature-forwarded-upstream-fix-FTBFS-on-Hurd-and-KFr.patch (new)
+
+ -- Picca Frédéric-Emmanuel <picca@debian.org>  Sun, 04 Mar 2012 12:06:58 +0100
+
+numexpr (1.4.2-3) unstable; urgency=low
+
+  [Antonio Valentino]
+  * New patch for fixing unit tests on 32 bit platforms
+  * Added local option file
+  * Re-enabled unit tests at build time
+  * TODO file added to the debian directory
+  * Updated copyright format URL
+  * Standard version bumped to 3.9.3 (no change)
+
+  [Picca Frédéric-Emmanuel]
+  * debian/control
+    - check all the dependencies with cme
+    - python-all (>= 2.6.6-3~) we are using dh_python2
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 25 Feb 2012 12:18:08 +0100
+
+numexpr (1.4.2-2) unstable; urgency=low
+
+  [Antonion Valentino]
+  * Switch to dh8 and python2 (dropped cdbs)
+  * Standard version bumped to 3.9.2 (no changes)
+  * Copyright file updated to DEP5 format
+  * Added local option file
+  * Updated package description
+  * New -dbg package (Closes: #657733)
+  * Perform unit tests at build time
+  * Local option file added in debian/source
+
+  [picca]
+  * debian/rules
+    - deactivated unit testing for now (waiting for the
+      latest upstream version)
+  * debian/control
+    - now the packaging is done under debian-science
+    - add Antonio Valentino as uploaders
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 15 Feb 2012 21:59:20 +0100
+
+numexpr (1.4.2-1.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Move call to dh_numpy under the install rule.
+
+ -- Miguel de Val Borro <miguel.deval@gmail.com>  Sat, 03 Dec 2011 18:05:28 +0100
+
+numexpr (1.4.2-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Fix "missing dependency on python-numpy" by adding the dh_numpy helper
+    script to the rules file (Closes: #641794)
+  * Urgency set to medium due to rc bug fix
+
+ -- Miguel de Val Borro <miguel.deval@gmail.com>  Fri, 02 Dec 2011 22:09:40 +0100
+
+numexpr (1.4.2-1) unstable; urgency=low
+
+  * Update to 1.4.2
+
+ -- Wen Heping <wenheping@gmail.com>  Wed, 06 Apr 2011 19:00:00 -0600
+
+numexpr (1.4.1-1) unstable; urgency=low
+
+  * Update to 1.4.1
+
+ -- Wen Heping <wenheping@gmail.com>  Sun, 31 Oct 2010 19:00:00 -0600
+
+
+numexpr (1.3.1-2) unstable; urgency=low
+
+  * move to sid
+
+ -- Wen Heping <wenheping@gmail.com>  Wed, 27 Oct 2010 19:00:00 -0600
+
+numexpr (1.3.1-1) experimental; urgency=low
+
+  * Initial Release. (Closes: #589165)
+
+ -- Wen Heping <wenheping@gmail.com>  Thu, 15 Jul 2010 23:54:05 -0600

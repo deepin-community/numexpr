@@ -1,0 +1,21 @@
+numexpr for Debian
+------------------
+
+It is possible to find more documentation at
+
+https://github.com/pydata/numexpr
+
+A _detailed_ changelog is available at:
+
+https://github.com/pydata/numexpr/blob/master/RELEASE_NOTES.rst
+
+Some issue related to threading have been reported on sparc machines.
+The problem is hard to reproduce and do not affects all installations.
+For this reason the default number of threads for computations is forced
+to one on sparc.
+You can verify if your sparc installation is affected by the problem by running
+the numexpr test suite.
+If you are not affected you can safely change the number of threads to be used
+for computations using the "numexpr.set_num_threads" function.
+
+ -- Wen Heping <wenheping@gmail.com>  Wed, 14 Jul 2010 21:50:27 +0800

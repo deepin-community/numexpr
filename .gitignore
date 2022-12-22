@@ -1,0 +1,16 @@
+syntax: glob
+
+build/
+build-cmake/
+dist/
+artifact/
+numexpr.egg-info/
+*.pyc
+*.swp
+*~
+doc/_build
+site.cfg
+.vscode
+*.pyd
+__config__.py
+version.py
