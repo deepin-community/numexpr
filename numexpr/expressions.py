@@ -15,43 +15,27 @@ import sys
 import threading
 
 import numpy
-# numpy's behavoir sometimes changes with versioning, especially in regard as 
-# to when ints are cast to floats.
-from distutils.version import LooseVersion
-_np_version_forbids_neg_powint = LooseVersion(numpy.__version__) >= LooseVersion('1.12.0b1')
 
 # Declare a double type that does not exist in Python space
 double = numpy.double
 
 # The default kind for undeclared variables
 default_kind = 'double'
-if sys.version_info[0] < 3:
-    int_ = int
-    long_ = long
-else:
-    int_ = numpy.int32
-    long_ = numpy.int64
+int_ = numpy.int32
+long_ = numpy.int64
 
 type_to_kind = {bool: 'bool', int_: 'int', long_: 'long', float: 'float',
-                double: 'double', complex: 'complex', bytes: 'bytes'}
+                double: 'double', complex: 'complex', bytes: 'bytes', str: 'str'}
 kind_to_type = {'bool': bool, 'int': int_, 'long': long_, 'float': float,
-                'double': double, 'complex': complex, 'bytes': bytes}
+                'double': double, 'complex': complex, 'bytes': bytes, 'str': str}
 kind_rank = ('bool', 'int', 'long', 'float', 'double', 'complex', 'none')
-scalar_constant_types = [bool, int_, long, float, double, complex, bytes]
+scalar_constant_types = [bool, int_, int, float, double, complex, bytes, str]
 
-# Final corrections for Python 3 (mainly for PyTables needs)
-if sys.version_info[0] > 2:
-    type_to_kind[str] = 'str'
-    kind_to_type['str'] = str
-    scalar_constant_types.append(str)
 scalar_constant_types = tuple(scalar_constant_types)
 
 from numexpr import interpreter
 
-
-class Expression(object):
-    def __init__(self):
-        object.__init__(self)
+class Expression():
 
     def __getattr__(self, name):
         if name.startswith('_'):
@@ -152,6 +136,8 @@ def bestConstantType(x):
     # a float (32-bit) array with a double (64-bit) constant.
     if isinstance(x, double):
         return double
+    if isinstance(x, numpy.float32):
+        return float
     if isinstance(x, (int, numpy.integer)):
         # Constants needing more than 32 bits are always
         # considered ``long``, *regardless of the platform*, so we
@@ -164,9 +150,9 @@ def bestConstantType(x):
     for converter in float, complex:
         try:
             y = converter(x)
-        except StandardError as err:
+        except Exception as err:
             continue
-        if y == x:
+        if y == x or numpy.isnan(y):
             return converter
 
 
@@ -283,18 +269,13 @@ def rtruediv_op(a, b):
 
 @ophelper
 def pow_op(a, b):
-    if (_np_version_forbids_neg_powint and
-        b.astKind in ('int', 'long') and
-        a.astKind in ('int', 'long') and
-        numpy.any(b.value < 0)):
-
-        raise ValueError(
-            'Integers to negative integer powers are not allowed.')
-
-    if allConstantNodes([a, b]):
-        return ConstantNode(a.value ** b.value)
+    
     if isinstance(b, ConstantNode):
         x = b.value
+        if (    a.astKind in ('int', 'long') and 
+                b.astKind in ('int', 'long') and x < 0) :
+            raise ValueError(
+                'Integers to negative integer powers are not allowed.')
         if get_optimization() == 'aggressive':
             RANGE = 50  # Approximate break even point with pow(x,y)
             # Optimize all integral and half integral powers in [-RANGE, RANGE]
@@ -325,7 +306,8 @@ def pow_op(a, b):
                 if r is None:
                     r = OpNode('ones_like', [a])
                 if x < 0:
-                    r = OpNode('div', [ConstantNode(1), r])
+                    # Issue #428
+                    r = truediv_op(ConstantNode(1), r)
                 return r
         if get_optimization() in ('moderate', 'aggressive'):
             if x == -1:
@@ -343,6 +325,7 @@ def pow_op(a, b):
     return OpNode('pow', [a, b])
 
 # The functions and the minimum and maximum types accepted
+numpy.expm1x = numpy.expm1
 functions = {
     'copy': func(numpy.copy),
     'ones_like': func(numpy.ones_like),
@@ -390,8 +373,9 @@ functions = {
 }
 
 
-class ExpressionNode(object):
-    """An object that represents a generic number object.
+class ExpressionNode():
+    """
+    An object that represents a generic number object.
 
     This implements the number special methods so that we can keep
     track of how this object has been used.
@@ -399,7 +383,6 @@ class ExpressionNode(object):
     astType = 'generic'
 
     def __init__(self, value=None, kind=None, children=None):
-        object.__init__(self)
         self.value = value
         if kind is None:
             kind = 'none'
@@ -441,7 +424,7 @@ class ExpressionNode(object):
 
     # The next check is commented out. See #24 for more info.
 
-    def __nonzero__(self):
+    def __bool__(self):
         raise TypeError("You can't use Python's standard boolean operators in "
                         "NumExpr expressions. You should use their bitwise "
                         "counterparts instead: '&' instead of 'and', "
@@ -451,9 +434,6 @@ class ExpressionNode(object):
     __sub__ = binop('sub')
     __rsub__ = binop('sub', reversed=True)
     __mul__ = __rmul__ = binop('mul')
-    if sys.version_info[0] < 3:
-        __div__ = div_op
-        __rdiv__ = binop('div', reversed=True)
     __truediv__ = truediv_op
     __rtruediv__ = rtruediv_op
     __pow__ = pow_op
@@ -490,8 +470,9 @@ class VariableNode(LeafNode):
         LeafNode.__init__(self, value=value, kind=kind)
 
 
-class RawNode(object):
-    """Used to pass raw integers to interpreter.
+class RawNode():
+    """
+    Used to pass raw integers to interpreter.
     For instance, for selecting what function to use in func1.
     Purposely don't inherit from ExpressionNode, since we don't wan't
     this to be used for anything but being walked.
@@ -515,7 +496,7 @@ class ConstantNode(LeafNode):
     def __init__(self, value=None, children=None):
         kind = getKind(value)
         # Python float constants are double precision by default
-        if kind == 'float':
+        if kind == 'float' and isinstance(value, float):
             kind = 'double'
         LeafNode.__init__(self, value=value, kind=kind)
 

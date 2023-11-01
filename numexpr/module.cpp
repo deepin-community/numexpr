@@ -13,6 +13,8 @@
 #include <structmember.h>
 #include <vector>
 
+#include <signal.h>
+
 #include "interpreter.hpp"
 #include "numexpr_object.hpp"
 
@@ -22,7 +24,6 @@ using namespace std;
 // in its 'th_params' variable
 global_state gs;
 long global_max_threads=DEFAULT_MAX_THREADS;
-
 
 /* Do the worker job for a certain thread */
 void *th_worker(void *tidptr)
@@ -210,7 +211,26 @@ int init_threads(void)
     gs.count_threads = 0;      /* Reset threads counter */
     gs.barrier_passed = 0;
 
-    /* Finally, create the threads */
+    /*
+     * Our worker threads should not deal with signals from the rest of the
+     * application - mask everything temporarily in this thread, so our workers
+     * can inherit that mask
+     */
+    sigset_t sigset_block_all, sigset_restore;
+    rc = sigfillset(&sigset_block_all);
+    if (rc != 0) {
+        fprintf(stderr, "ERROR; failed to block signals: sigfillset: %s",
+                strerror(rc));
+        exit(-1);
+    }
+    rc = pthread_sigmask( SIG_BLOCK, &sigset_block_all, &sigset_restore);
+    if (rc != 0) {
+        fprintf(stderr, "ERROR; failed to block signals: pthread_sigmask: %s",
+                strerror(rc));
+        exit(-1);
+    }
+
+    /* Now create the threads */
     for (tid = 0; tid < gs.nthreads; tid++) {
         gs.tids[tid] = tid;
         rc = pthread_create(&gs.threads[tid], NULL, th_worker,
@@ -221,6 +241,18 @@ int init_threads(void)
             fprintf(stderr, "\tError detail: %s\n", strerror(rc));
             exit(-1);
         }
+    }
+
+    /*
+     * Restore the signal mask so the main thread can process signals as
+     * expected
+     */
+    rc = pthread_sigmask( SIG_SETMASK, &sigset_restore, NULL);
+    if (rc != 0) {
+        fprintf(stderr,
+                "ERROR: failed to restore signal mask: pthread_sigmask: %s",
+                strerror(rc));
+        exit(-1);
     }
 
     gs.init_threads_done = 1;                 /* Initialization done! */
@@ -401,8 +433,6 @@ add_symbol(PyObject *d, const char *sname, int name, const char* routine_name)
 extern "C" {
 #endif
 
-#if PY_MAJOR_VERSION >= 3
-
 /* XXX: handle the "global_state" state via moduledef */
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
@@ -419,15 +449,7 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 PyObject *
-PyInit_interpreter(void)
-
-#else
-#define INITERROR return
-
-PyMODINIT_FUNC
-initinterpreter()
-#endif
-{
+PyInit_interpreter(void) {
     PyObject *m, *d;
 
 
@@ -450,11 +472,7 @@ initinterpreter()
     if (PyType_Ready(&NumExprType) < 0)
         INITERROR;
 
-#if PY_MAJOR_VERSION >= 3
     m = PyModule_Create(&moduledef);
-#else
-    m = Py_InitModule3("interpreter", module_methods, NULL);
-#endif
 
     if (m == NULL)
         INITERROR;
@@ -511,10 +529,7 @@ initinterpreter()
     if(PyModule_AddObject(m, "use_vml", Py_False) < 0) INITERROR;
 #endif
 
-
-#if PY_MAJOR_VERSION >= 3
     return m;
-#endif
 }
 
 #ifdef __cplusplus

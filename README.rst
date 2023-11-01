@@ -24,6 +24,22 @@ NumExpr: Fast numerical expression evaluator for NumPy
 .. |version| image:: https://img.shields.io/pypi/v/numexpr.png
         :target: https://pypi.python.org/pypi/numexpr
 
+IMPORTANT NOTE: NumExpr is looking for maintainers!
+---------------------------------------------------
+
+After 5 years as a solo maintainer (and performing a most excellent work), Robert McLeod
+is asking for a well deserved break. So the NumExpr project is looking for a new
+maintainer for a package that is used in pandas, PyTables and many other packages.
+If have benefited of NumExpr capabilities in the past, and willing to contribute back to
+the community, we would be happy to hear about you!
+
+We are looking for someone that is knowledgeable about compiling extensions, and that is
+ready to spend some cycles in making releases (2 or 3 a year, maybe even less!).
+Interested? just open a new ticket here and we will help you onboarding!
+
+Thank you!
+
+
 What is NumExpr?
 ----------------
 
@@ -60,9 +76,9 @@ execution.
 The result is that NumExpr can get the most of your machine computing
 capabilities for array-wise computations. Common speed-ups with regard
 to NumPy are usually between 0.95x (for very simple expressions like
-:code:`'a + 1'`) and 4x (for relatively complex ones like :code:`'a*b-4.1*a >
-2.5*b'`), although much higher speed-ups can be achieved for some functions 
-and complex math operations (up to 15x in some cases).
+:code:`'a + 1'`) and 4x (for relatively complex ones like :code:`'a*b-4.1*a > 2.5*b'`), 
+although much higher speed-ups can be achieved for some functions  and complex 
+math operations (up to 15x in some cases).
 
 NumExpr performs best on matrices that are too large to fit in L1 CPU cache. 
 In order to get a better idea on the different speed-ups that can be achieved 
@@ -88,17 +104,17 @@ to use the `conda` package manager in this case::
 From Source
 ^^^^^^^^^^^
 
-On most `Nix systems your compilers will already be present. However if you 
+On most \*nix systems your compilers will already be present. However if you 
 are using a virtual environment with a substantially newer version of Python than
 your system Python you may be prompted to install a new version of `gcc` or `clang`.
 
 For Windows, you will need to install the Microsoft Visual C++ Build Tools 
-(which are free) first.The version depends on which version of Python you have 
+(which are free) first. The version depends on which version of Python you have 
 installed:
 
 https://wiki.python.org/moin/WindowsCompilers
 
-For Python 3.6+ simply installating the latest version of MSVC build tools should 
+For Python 3.6+ simply installing the latest version of MSVC build tools should 
 be sufficient. Note that wheels found via pip do not include MKL support. Wheels 
 available via `conda` will have MKL, if the MKL backend is used for NumPy.
 
@@ -119,7 +135,7 @@ Enable Intel® MKL support
 
 NumExpr includes support for Intel's MKL library. This may provide better 
 performance on Intel architectures, mainly when evaluating transcendental 
-functions (trigonometrical, exponential...). 
+functions (trigonometrical, exponential, ...). 
 
 If you have Intel's MKL, copy the `site.cfg.example` that comes with the 
 distribution to `site.cfg` and edit the latter file to provide correct paths to 

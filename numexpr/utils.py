@@ -17,6 +17,7 @@ import platform
 
 from numexpr.interpreter import _set_num_threads, _get_num_threads, MAX_THREADS
 from numexpr import use_vml
+from . import version
 
 if use_vml:
     from numexpr.interpreter import (
@@ -25,7 +26,9 @@ if use_vml:
 
 
 def get_vml_version():
-    """Get the VML/MKL library version."""
+    """
+    Get the VML/MKL library version.
+    """
     if use_vml:
         return _get_vml_version()
     else:
@@ -54,7 +57,7 @@ def set_vml_accuracy_mode(mode):
     if use_vml:
         acc_dict = {None: 0, 'low': 1, 'high': 2, 'fast': 3}
         acc_reverse_dict = {1: 'low', 2: 'high', 3: 'fast'}
-        if mode not in acc_dict.keys():
+        if mode not in list(acc_dict.keys()):
             raise ValueError(
                 "mode argument must be one of: None, 'high', 'low', 'fast'")
         retval = _set_vml_accuracy_mode(acc_dict.get(mode, 0))
@@ -121,7 +124,7 @@ def _init_num_threads():
     the virtual machine.
     """
     # Any platform-specific short-circuits
-    if 'sparc' in platform.machine():
+    if 'sparc' in version.platform_machine:
         log.warning('The number of threads have been set to 1 because problems related '
                   'to threading have been reported on some sparc machine. '
                   'The number of threads can be changed using the "set_num_threads" '
@@ -218,7 +221,7 @@ class CacheDict(dict):
         if len(self) > self.maxentries:
             # Remove a 10% of (arbitrary) elements from the cache
             entries_to_remove = self.maxentries // 10
-            for k in self.keys()[:entries_to_remove]:
+            for k in list(self.keys())[:entries_to_remove]:
                 super(CacheDict, self).__delitem__(k)
         super(CacheDict, self).__setitem__(key, value)
 

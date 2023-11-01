@@ -11,7 +11,7 @@ Preliminaries
 -------------
 
 * Make sure that `RELEASE_NOTES.rst` and `ANNOUNCE.rst` are up to date with the latest news in the release.
-* Ensure that `branch = ''` in `setup.py`.
+* Ensure that there is no branch in the version in `setup.cfg`.
 * Do a commit and a push:
 
     `git commit -a -m "Getting ready for release X.Y.Z"`
@@ -45,22 +45,19 @@ Tagging
 Build Wheels
 ------------
 
-* Check on GitHub Actions `github.com/robbmcleod/cpufeature/actions` that all the wheels built successfully.
-* Download `artifacts.zip` and unzip.
-* Make the source tarball with the command
-
-    `python setup.py sdist`
+* Check on GitHub Actions `github.com/pydata/numexpr` that all the wheels built successfully.
+* Download `artifacts.zip` and unzip, you should find the source tarball and all wheels.
 
 Releasing
 ---------
 
 * Upload the built wheels to PyPi via Twine.
 
-    `twine upload artifact/numexpr*.whl`
+    `twine upload --repository numexpr artifact/numexpr*.whl`
 
 * Upload the source distribution.
 
-    `twine upload dist/numexpr-X.Y.Z.tar.gz`
+    `twine upload --repository numexpr artifact/numexpr*.tar.gz`
 
 * Check on `pypi.org/project/numexpr/#files` that the wheels and source have uploaded as expected.
 
@@ -77,13 +74,14 @@ Announcing
 Post-release actions
 --------------------
 
-* Bump the `nano` version number in `setup.py`, including setting `branch = 'dev0'`.
+* Add `.dev1` to the version number in `setup.cfg`, and bump the bugfix version 
+  number.
 * Create new headers for adding new features in `RELEASE_NOTES.rst`
   and add this place-holder:
 
   `* **Under development.**`
 
-  Don't forget to update header to the next version in those files.
+  Don't forget to update the header to the next version as well.
 
 * Commit your changes:
 
