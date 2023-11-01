@@ -1,3 +1,0 @@
-Tests: python3
-Depends: python3-numexpr,
-         python3-all

@@ -3,26 +3,26 @@ Upstream-Name: numexpr
 Source: https://github.com/pydata/numexpr
 
 Files: *
-Copyright: 2007-2008 David M. Cooke <david.m.cooke@gmail.com>
-           2009-2010 Francesc Alted <faltet@pytables.org>
-           2011-2020 David M. Cooke <david.m.cooke@gmail.com>
-                     Tim Hochberg
-                     Francesc Alted <faltet@pytables.org>
-                     Ivan Vilata
-                     Gregor Thalhammer
-                     Mark Wiebe
-                     Gaëtan de Menten
-                     Antonio Valentino <antonio.valentino@tiscali.it>
-                     Robert A. McLeod
+Copyright: 2007-2008, David M. Cooke <david.m.cooke@gmail.com>
+           2009-2010, Francesc Alted <faltet@pytables.org>
+           2011-2020, David M. Cooke <david.m.cooke@gmail.com>
+                      Tim Hochberg
+                      Francesc Alted <faltet@pytables.org>
+                      Ivan Vilata
+                      Gregor Thalhammer
+                      Mark Wiebe
+                      Gaëtan de Menten
+                      Antonio Valentino <antonio.valentino@tiscali.it>
+                      Robert A. McLeod
 License: Expat
 
 Files: numexpr/win32/pthread.*
-Copyright: 2009 Andrzej K. Haczewski <ahaczewski@gmail.com>
+Copyright: 2009, Andrzej K. Haczewski <ahaczewski@gmail.com>
 License: Expat
 
 Files: numexpr/cpuinfo.py
-Copyright: 2002  Pearu Peterson <pearu@cens.ioc.ee>
-License: numpy
+Copyright: 2002, Pearu Peterson <pearu@cens.ioc.ee>
+License: BSD-3-clause
  Permission to use, modify, and distribute this software is given under the
  terms of the NumPy (BSD style) license.
  .
@@ -48,14 +48,16 @@ License: numpy
  THE SOFTWARE.
 
 Files: numexpr/str-two-way.hpp
-Copyright: 2008, 2010 Eric Blake
-License: other
- Permission to use, copy, modify, and distribute this software
- is freely granted, provided that this notice is preserved.
+Copyright: 2008, 2010, Eric Blake
+License: public-domain
+
+Files: numexpr/win32/stdint.h
+Copyright: 2020, Danny Smith <danny_r_smith_2001@yahoo.co.nz>
+License: public-domain
 
 Files: debian/*
-Copyright: 2010 Wen Heping <wenheping@gmail.com>
-           2012- Antonio Valentino <antonio.valentino@tiscali.it>
+Copyright: 2010,      Wen Heping <wenheping@gmail.com>
+           2012-2023, Antonio Valentino <antonio.valentino@tiscali.it>
 License: GPL-3.0
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -91,3 +93,12 @@ License: Expat
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
+
+License: public-domain
+ This source code is offered for use in the public domain. You may
+ use, modify or distribute it freely.
+ .
+ This code is distributed in the hope that it will be useful but
+ WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ DISCLAIMED. This includes but is not limited to warranties of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

@@ -23,8 +23,11 @@
 /* Some missing symbols and functions for Win */
 #define fmax max
 #define fmin min
-#define INFINITY (DBL_MAX+DBL_MAX)
-#define NAN (INFINITY-INFINITY)
+#define NE_INFINITY (DBL_MAX+DBL_MAX)
+#define NE_NAN (INFINITY-INFINITY)
+#else 
+#define NE_INFINITY INFINITY
+#define NE_NAN NAN
 #endif
 
 #ifndef SIZE_MAX
@@ -258,7 +261,7 @@ static void vzExpm1(MKL_INT n, const MKL_Complex16* x1, MKL_Complex16* dest)
     MKL_INT j;
     vzExp(n, x1, dest);
     for (j=0; j<n; j++) {
-    dest[j].real -= 1.0;
+        dest[j].real -= 1.0;
     };
 };
 
@@ -266,8 +269,8 @@ static void vzLog1p(MKL_INT n, const MKL_Complex16* x1, MKL_Complex16* dest)
 {
     MKL_INT j;
     for (j=0; j<n; j++) {
-    dest[j].real = x1[j].real + 1;
-    dest[j].imag = x1[j].imag;
+        dest[j].real = x1[j].real + 1;
+        dest[j].imag = x1[j].imag;
     };
     vzLn(n, dest, dest);
 };
@@ -987,7 +990,10 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
     int r, pc_error = 0;
     int reduction_axis = -1;
     npy_intp reduction_size = -1; // For #277 change this 1 -> -1 to be in-line with NumPy 1.8,
-    int ex_uses_vml = 0, is_reduction = 0;
+#ifdef USE_VML
+    int ex_uses_vml = 0;
+#endif
+    int is_reduction = 0;
     bool reduction_outer_loop = false, need_output_buffering = false, full_reduction = false;
 
     // To specify axes when doing a reduction
@@ -1037,9 +1043,11 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
             return PyErr_Format(PyExc_ValueError,
                                 "ex_uses_vml parameter is required");
         }
+#ifdef USE_VML
         if (tmp == Py_True) {
             ex_uses_vml = 1;
         }
+#endif
             // borrowed ref
         operands[0] = (PyArrayObject *)PyDict_GetItemString(kwds, "out");
         if (operands[0] != NULL) {
@@ -1243,6 +1251,11 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
 
 
     /* A case with a single constant output */
+    PyArrayObject *singleton;
+    bool writeback;
+    // NOTE: cannot assign on declaration due to `goto` statements
+    singleton = NULL; 
+    writeback = false;
     if (n_inputs == 0) {
         char retsig = get_return_sig(self->program);
 
@@ -1255,8 +1268,7 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
                 goto fail;
             }
         }
-        else {
-            PyArrayObject *a;
+        else { // Use the provided output array
             if (PyArray_SIZE(operands[0]) != 1) {
                 PyErr_SetString(PyExc_ValueError,
                         "output for a constant expression must have size 1");
@@ -1268,17 +1280,30 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
                 goto fail;
             }
             Py_INCREF(dtypes[0]);
-            a = (PyArrayObject *)PyArray_FromArray(operands[0], dtypes[0],
-                                        NPY_ARRAY_ALIGNED|NPY_ARRAY_UPDATEIFCOPY);
-            if (a == NULL) {
+
+            // NumPy folks suggested using WRITEBACKIFCOPY to resolve issue #397
+            singleton = (PyArrayObject *)PyArray_FromArray(operands[0], dtypes[0],
+                                        NPY_ARRAY_ALIGNED|NPY_ARRAY_WRITEBACKIFCOPY);
+            if (singleton == NULL) {
                 goto fail;
             }
+            writeback = true;
             Py_DECREF(operands[0]);
-            operands[0] = a;
+            operands[0] = singleton;
         }
 
         r = run_interpreter_const(self, PyArray_BYTES(operands[0]), &pc_error);
 
+        if (writeback) {
+            // Write-back our copy to the passed in output array if we had to make a copy
+            // (which only happens if the input was not aligned)
+            int retval = PyArray_ResolveWritebackIfCopy(singleton);
+            if (retval < 0) {
+                // 1 means it copied the value, 0 means no copy, only -1 is an error.
+                PyErr_Format(PyExc_ValueError, "Writeback to singleton failed with error code: %d", retval);
+                goto fail;
+            }
+        }
         ret = (PyObject *)operands[0];
         Py_INCREF(ret);
         goto cleanup_and_exit;
@@ -1409,7 +1434,7 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
             fill = PyLong_FromLong(1);
         } else if (PyArray_DESCR(a)->kind == 'f') {
             /* floating point min/max identity is NaN */
-            fill = PyFloat_FromDouble(NAN);
+            fill = PyFloat_FromDouble(NE_NAN);
         } else if (op >= OP_MIN && op < OP_MAX) {
             /* integer min identity */
             fill = PyLong_FromLong(LONG_MAX);

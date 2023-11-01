@@ -1,3 +1,133 @@
+numexpr (2.8.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Remove 0001-Fix-scientific-notation.patch and
+      0002-Fix-sanitization.patch, applied upstream.
+  * Update d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 01 Oct 2023 06:59:06 +0000
+
+numexpr (2.8.6-4) unstable; urgency=medium
+
+  * debian/patches:
+    - Drop 0001-Set-sanotize-to-False-by-default.patch.
+      Closes: #1052454.
+    - New 0001-Fix-scientific-notation.patch.
+    - New 0002-Fix-sanitization.patch.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 23 Sep 2023 09:16:47 +0000
+
+numexpr (2.8.6-3) unstable; urgency=medium
+
+  * debian/patches:
+    - Improve 0001-Set-sanotize-to-False-by-default.patch.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 22 Sep 2023 11:00:57 +0000
+
+numexpr (2.8.6-2) unstable; urgency=medium
+
+  * debian/patches:
+    - New 0001-Set-sanotize-to-False-by-default.patch.
+      Ensure backward compatibility.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 22 Sep 2023 06:18:55 +0000
+
+numexpr (2.8.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - drop 1049326_sanitize_fix.patch (applied upstream).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 16 Sep 2023 13:07:39 +0000
+
+numexpr (2.8.5-3) unstable; urgency=medium
+
+  * debian/patches:
+    - Improve d/patches/1049326_sanitize_fix.patch
+      (patch provided by Rebecca N. Palmer).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 18 Aug 2023 06:14:31 +0000
+
+numexpr (2.8.5-2) unstable; urgency=medium
+
+  [ Rebecca N. Palmer ]
+  * Loosen input sanitization to not break pandas.  (Closes: #1049326)
+
+  [ Antonio Valentino ]
+  * debian/control:
+    - Minor update to the package description.
+  * Use d/clean instead of overriding targets in d/rules.
+  * Switch to dh-sequence-*.
+  * New d/python3-numexpr.lintian-overrides.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 17 Aug 2023 07:38:32 +0000
+
+numexpr (2.8.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standards version bumped to 4.6.2 (no changes).
+  * Bump debhelper-compat version to 13.
+  * Add build dependency on dh-sequence-numpy3.
+  * Switch to autopkgtest-pkg-pybuild and drop the no longer
+    needed d/tests folder.
+  * Update dates in d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 07 Aug 2023 05:43:06 +0000
+
+numexpr (2.8.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fix d/copyright formatting.
+  * Update d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 29 Oct 2022 14:37:58 +0000
+
+numexpr (2.8.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 01 Jul 2022 17:49:47 +0000
+
+numexpr (2.8.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standard version bumped to 4.6.1, no changes.
+  * debian/tests:
+    - autopkgtest all supported python versions.
+  * debian/contril:
+    - build-depend on pybuild-plugin-pyproject.
+  * Update d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 24 Jun 2022 06:28:05 +0000
+
+numexpr (2.8.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - update dependencies (python3-packaging added).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 11 Dec 2021 14:02:58 +0000
+
+numexpr (2.8.0-2) unstable; urgency=medium
+
+  * debian/control:
+    - drop dependency on pkg-resources (no longer necessary)
+    - add dependency on setuptools
+      (see https://github.com/pydata/numexpr/issues/391).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 02 Dec 2021 19:09:29 +0000
+
+numexpr (2.8.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Remove unnused d/tests/python3-dbg.
+  * debian/watch:
+    - only scan for new versions of the 2.x series.
+  * Update the d/copyright file.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 02 Dec 2021 07:35:02 +0000
+
 numexpr (2.7.3-2) unstable; urgency=medium
 
   * Standards version bumped to 4.6.0 (no chenges).
@@ -69,7 +199,7 @@ numexpr (2.6.9-2) unstable; urgency=medium
   * Set compat to 12.
   * Standard version bumped to 4.4.0 (no change).
   * debian/rules:
-    - drop "-pie" form hardening flags
+    - drop "-pie" from hardening flags
 
  -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 04 Aug 2019 06:47:41 +0000
 

@@ -1,7 +1,7 @@
-NumExpr 2.0 User Guide
+NumExpr 2.8 User Guide
 ======================
 
-The :code:`numexpr` package supplies routines for the fast evaluation of
+The NumExpr package supplies routines for the fast evaluation of
 array expressions elementwise by using a vector-based virtual
 machine.
 
@@ -11,23 +11,33 @@ Using it is simple::
     >>> import numexpr as ne
     >>> a = np.arange(10)
     >>> b = np.arange(0, 20, 2)
-    >>> c = ne.evaluate("2*a+3*b")
+    >>> c = ne.evaluate('2*a + 3*b')
     >>> c
     array([ 0,  8, 16, 24, 32, 40, 48, 56, 64, 72])
 
 
+It is also possible to use NumExpr to validate an expression::
+
+    >>> ne.validate('2*a + 3*b')
+
+which returns `None` on success or raises an exception on invalid inputs.
+
+and it can also re_evaluate an expression::
+
+    >>> b = np.arange(0, 40, 4)
+    >>> ne.re_evaluate()
+
 Building
 --------
 
-*NumExpr* requires Python_ 2.6 or greater, and NumPy_ 1.7 or greater.  It is 
+*NumExpr* requires Python_ 3.7 or greater, and NumPy_ 1.13 or greater.  It is 
 built in the standard Python way:
 
 .. code-block:: bash
 
-    $ python setup.py build
-    $ python setup.py install
+    $ pip install .
 
-You must have a C-compiler (i.e. MSVC on Windows and GCC on Linux) installed.
+You must have a C-compiler (i.e. MSVC Build tools on Windows and GCC on Linux) installed.
 
 Then change to a directory that is not the repository directory (e.g. `/tmp`) and 
 test :code:`numexpr` with:
@@ -78,7 +88,7 @@ threads used can be adjusted dynamically via ``numexpr.set_num_threads(int)``.
 The number of threads can never exceed that set by ``NUMEXPR_MAX_THREADS``.
 
 If the user has not configured the environment prior to importing NumExpr, info 
-logs will be generated, and the initial number of threads _that are used_ will 
+logs will be generated, and the initial number of threads *that are used*_ will 
 be set to the number of cores detected in the system or 8, whichever is *less*. 
 
 Usage::
@@ -178,7 +188,7 @@ Supported operators
 
 *NumExpr* supports the set of operators listed below:
 
-    * Logical operators: :code:`&, |, ~`
+    * Bitwise operators (and, or, not, xor): :code:`&, |, ~, ^`
     * Comparison operators: :code:`<, <=, ==, !=, >=, >`
     * Unary arithmetic operators: :code:`-`
     * Binary arithmetic operators: :code:`+, -, *, /, **, %, <<, >>`
@@ -266,9 +276,6 @@ General routines
     one can.
 
   * :code:`detect_number_of_cores()`: Detects the number of cores on a system.
-
-
-
 
 
 Intel's VML specific support routines
