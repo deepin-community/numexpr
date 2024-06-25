@@ -19,7 +19,7 @@ import subprocess
 
 import numpy as np
 from numpy import (
-    array, arange, empty, zeros, int32, int64, uint16, complex_, float64, rec,
+    array, arange, empty, zeros, int32, int64, uint16, cdouble, float64, rec,
     copy, ones_like, where, all as alltrue, linspace,
     sum, prod, sqrt, fmod, floor, ceil,
     sin, cos, tan, arcsin, arccos, arctan, arctan2,
@@ -33,6 +33,7 @@ from numpy import shape, allclose, array_equal, ravel, isnan, isinf
 import numexpr
 from numexpr import E, NumExpr, evaluate, re_evaluate, validate, disassemble, use_vml
 from numexpr.expressions import ConstantNode
+from numexpr.utils import detect_number_of_cores
 
 import unittest
 
@@ -40,6 +41,7 @@ TestCase = unittest.TestCase
 
 double = np.double
 long = int
+MAX_THREADS = 16
 
 
 class test_numexpr(TestCase):
@@ -296,7 +298,7 @@ class test_numexpr(TestCase):
         b = b'a' * 40
         res = evaluate('contains(a, b)')
         assert_equal(res, True)
-        
+
     def test_where_scalar_bool(self):
         a = True
         b = array([1, 2])
@@ -307,7 +309,8 @@ class test_numexpr(TestCase):
         res = evaluate('where(a, b, c)')
         assert_array_equal(res, c)
 
-    
+    @unittest.skipIf(hasattr(sys, "pypy_version_info"),
+                     "PyPy does not have sys.getrefcount()")
     def test_refcount(self):
         # Regression test for issue #310
         a = array([1])
@@ -317,7 +320,7 @@ class test_numexpr(TestCase):
 
     def test_locals_clears_globals(self):
         # Check for issue #313, whereby clearing f_locals also clear f_globals
-        # if in the top-frame. This cannot be done inside `unittest` as it is always 
+        # if in the top-frame. This cannot be done inside `unittest` as it is always
         # executing code in a child frame.
         script = r';'.join([
                 r"import numexpr as ne",
@@ -333,7 +336,7 @@ class test_numexpr(TestCase):
             ])
         # Raises CalledProcessError on a non-normal exit
         check = subprocess.check_call([sys.executable, '-c', script])
-        # Ideally this test should also be done against ipython but it's not 
+        # Ideally this test should also be done against ipython but it's not
         # a requirement.
 
 
@@ -443,7 +446,7 @@ class test_evaluate(TestCase):
 
     def test_complex_expr(self):
         def complex(a, b):
-            c = zeros(a.shape, dtype=complex_)
+            c = zeros(a.shape, dtype=cdouble)
             c.real = a
             c.imag = b
             return c
@@ -520,7 +523,7 @@ class test_evaluate(TestCase):
                 self.fail()
 
             # Forbid colon for lambda funcs
-            try: 
+            try:
                 evaluate('lambda x: x')
             except ValueError:
                 pass
@@ -576,7 +579,15 @@ class test_evaluate(TestCase):
             evaluate('c.real')
             evaluate('c.imag')
 
-        
+            # pass imaginary unit j
+            evaluate('1.5j')
+            evaluate('3.j')
+
+            # pass forbidden characters within quotes
+            x = np.array(['a', 'b'], dtype=bytes)
+            evaluate("x == 'b:'")
+
+
     def test_no_sanitize(self):
         try: # Errors on compile() after eval()
             evaluate('import os;', sanitize=False)
@@ -596,7 +607,7 @@ class test_evaluate(TestCase):
     def test_disassemble(self):
         assert_equal(disassemble(NumExpr(
             "where(m, a, -1)", [('m', bool), ('a', float)])),
-            [[b'where_fbff', b'r0', b'r1[m]', b'r2[a]', b'c3[-1.0]'], 
+            [[b'where_fbff', b'r0', b'r1[m]', b'r2[a]', b'c3[-1.0]'],
              [b'noop', None, None, None]])
 
     def test_constant_deduplication(self):
@@ -615,18 +626,18 @@ class test_evaluate(TestCase):
         assert_equal(ConstantNode(numpy.float32(1)).astKind, "float")
         assert_equal(ConstantNode(numpy.float32("nan")).astKind, "float")
         assert_equal(ConstantNode(numpy.float32(3)).value.dtype, numpy.dtype("float32"))
-        assert_array_equal(NumExpr(ConstantNode(numpy.float32(1))).run(), 
+        assert_array_equal(NumExpr(ConstantNode(numpy.float32(1))).run(),
                            numpy.array(1, dtype="float32"))
 
     def test_unaligned_singleton(self):
-        # Test for issue #397 whether singletons outputs assigned to consts must be 
+        # Test for issue #397 whether singletons outputs assigned to consts must be
         # aligned or not.
         a = np.empty(5, dtype=np.uint8)[1:].view(np.int32)
         evaluate('3', out=a)
         assert_equal(a, 3)
 
     def test_negative_mod(self):
-        # Test for issue #413, modulus of negative integers. C modulus is 
+        # Test for issue #413, modulus of negative integers. C modulus is
         # actually remainder op, and hence different from Python modulus.
         a = np.array([-500, -135, 0, 0, 135, 500], dtype=np.int32)
         n = np.array([-360, -360, -360, 360, 360, 360], dtype=np.int32)
@@ -641,11 +652,11 @@ class test_evaluate(TestCase):
     def test_negative_power_scalar(self):
         # Test for issue #428, where the power is negative and the base is an
         # integer. This was running afoul in the precomputation in `expressions.py:pow_op()`
-        base = np.array([-2, -1, 0, 1, 2, 3], dtype=np.int32)
+        base = np.array([-2, -1, 1, 2, 3], dtype=np.int32)
         out_i = evaluate('base ** -1.0')
         assert_equal(out_i, np.power(base, -1.0))
 
-        base = np.array([-2, -1, 0, 1, 2, 3], dtype=np.int64)
+        base = np.array([-2, -1, 1, 2, 3], dtype=np.int64)
         out_l = evaluate('base ** -1.0')
         assert_equal(out_l, np.power(base, -1.0))
 
@@ -1111,7 +1122,7 @@ def _environment(key, value):
 # Test cases for the threading configuration
 class test_threading_config(TestCase):
     def test_max_threads_unset(self):
-        # Has to be done in a subprocess as `importlib.reload` doesn't let us 
+        # Has to be done in a subprocess as `importlib.reload` doesn't let us
         # re-initialize the threadpool
         script = '\n'.join([
                 "import os",
@@ -1123,7 +1134,7 @@ class test_threading_config(TestCase):
         subprocess.check_call([sys.executable, '-c', script])
 
     def test_max_threads_set(self):
-        # Has to be done in a subprocess as `importlib.reload` doesn't let us 
+        # Has to be done in a subprocess as `importlib.reload` doesn't let us
         # re-initialize the threadpool
         script = '\n'.join([
                 "import os",
@@ -1148,6 +1159,20 @@ class test_threading_config(TestCase):
                 self.assertEqual(1, numexpr._init_num_threads())
             else:
                 self.assertEqual(5, numexpr._init_num_threads())
+
+    def test_omp_num_threads_empty_string(self):
+        with _environment('OMP_NUM_THREADS', ''):
+            if 'sparc' in platform.machine():
+                self.assertEqual(1, numexpr._init_num_threads())
+            else:
+                self.assertEqual(min(detect_number_of_cores(), MAX_THREADS), numexpr._init_num_threads())
+
+    def test_numexpr_max_threads_empty_string(self):
+        with _environment('NUMEXPR_MAX_THREADS', ''):
+            if 'sparc' in platform.machine():
+                self.assertEqual(1, numexpr._init_num_threads())
+            else:
+                self.assertEqual(min(detect_number_of_cores(), MAX_THREADS), numexpr._init_num_threads())
 
     def test_vml_threads_round_trip(self):
         n_threads = 3
@@ -1238,7 +1263,7 @@ def print_versions():
     (sysname, nodename, release, os_version, machine, processor) = platform.uname()
     print('Platform:          %s-%s-%s' % (sys.platform, machine, os_version))
     try:
-        # cpuinfo doesn't work on OSX well it seems, so protect these outputs 
+        # cpuinfo doesn't work on OSX well it seems, so protect these outputs
         # with a try block
         cpu_info = cpu.info[0]
         print('CPU vendor:        %s' % cpu_info.get('VendorIdentifier', ''))
@@ -1291,28 +1316,28 @@ def suite():
         add_method(func)
 
     for n in range(niter):
-        theSuite.addTest(unittest.makeSuite(test_numexpr))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_numexpr))
         if 'sparc' not in platform.machine():
-            theSuite.addTest(unittest.makeSuite(test_numexpr2))
-        theSuite.addTest(unittest.makeSuite(test_evaluate))
-        theSuite.addTest(unittest.makeSuite(TestExpressions))
-        theSuite.addTest(unittest.makeSuite(test_int32_int64))
-        theSuite.addTest(unittest.makeSuite(test_uint32_int64))
-        theSuite.addTest(unittest.makeSuite(test_strings))
+            theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_numexpr2))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_evaluate))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestExpressions))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_int32_int64))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_uint32_int64))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_strings))
         theSuite.addTest(
-            unittest.makeSuite(test_irregular_stride))
-        theSuite.addTest(unittest.makeSuite(test_zerodim))
-        theSuite.addTest(unittest.makeSuite(test_threading_config))
+            unittest.defaultTestLoader.loadTestsFromTestCase(test_irregular_stride))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_zerodim))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_threading_config))
 
         # multiprocessing module is not supported on Hurd/kFreeBSD
         if (pl.system().lower() not in ('gnu', 'gnu/kfreebsd')):
-            theSuite.addTest(unittest.makeSuite(test_subprocess))
+            theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_subprocess))
 
         # I need to put this test after test_subprocess because
         # if not, the test suite locks immediately before test_subproces.
         # This only happens with Windows, so I suspect of a subtle bad
         # interaction with threads and subprocess :-/
-        theSuite.addTest(unittest.makeSuite(test_threading))
+        theSuite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_threading))
 
     return theSuite
 

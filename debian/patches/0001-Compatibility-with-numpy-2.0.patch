@@ -1,0 +1,24 @@
+From: Antonio Valentino <antonio.valentino@tiscali.it>
+Date: Sat, 6 Apr 2024 15:24:37 +0000
+Subject: Compatibility with numpy < 2.0
+
+Forwarded: not-needed
+---
+ numexpr/interpreter.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/numexpr/interpreter.cpp b/numexpr/interpreter.cpp
+index edebd71..dca4982 100644
+--- a/numexpr/interpreter.cpp
++++ b/numexpr/interpreter.cpp
+@@ -61,6 +61,10 @@
+ #define DEBUG_TEST 0
+ #endif
+ 
++#if NPY_ABI_VERSION < 0x02000000
++  #define PyDataType_ELSIZE(descr) ((descr)->elsize)
++  #define PyDataType_SET_ELSIZE(descr, size) ((descr)->elsize = (size))
++#endif
+ 
+ using namespace std;
+ 

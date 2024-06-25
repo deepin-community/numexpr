@@ -1,6 +1,66 @@
-====================================
-Release notes for NumExpr 2.8 series
-====================================
+=====================================
+Release notes for NumExpr 2.10 series
+=====================================
+
+Changes from 2.10.0 to 2.10.1
+-----------------------------
+
+- The default number of 'safe' threads has been upgraded to 16 (instead of
+  previous 8). That means that if your CPU has > 16 cores, the default is
+  to use 16. You can always override this with the "NUMEXPR_MAX_THREADS"
+  environment variable.
+
+- NumPy 1.23 is now the minimum supported.
+
+- Preliminary support for Python 3.13. Thanks to Karolina Surma.
+
+- Fix tests on nthreads detection (closes: #479). Thanks to @avalentino.
+
+- The build process has been modernized and now uses the `pyproject.toml`
+  file for more of the configuration options.
+
+
+Changes from 2.9.0 to 2.10.0
+----------------------------
+
+* Support for NumPy 2.0.0.  This is still experimental, so please
+  report any issues you find.  Thanks to Clément Robert and Thomas
+  Caswell for the work.
+
+* Avoid erroring when OMP_NUM_THREADS is empty string.  Thanks to
+  Patrick Hoefler.
+
+* Do not warn if OMP_NUM_THREAD set.
+
+
+Changes from 2.8.8 to 2.9.0
+---------------------------
+
+* Support for PyPy (see PRs #467 and #740).  The full test suite
+  should pass now, at least for the 3.10 version.  Thanks to
+  @27rabbitlt for most of the work and @mgorny and @mattip for
+  providing help and additional fixes.  Fixes #463.
+
+* Fixed more sanitizer issues (see PR #469).  Thanks to @27rabbitlt.
+
+* Modernized the test suite to avoid some warnings.
+
+
+Changes from 2.8.7 to 2.8.8
+---------------------------
+
+* Fix re_evaluate not taking global_dict as argument. Thanks to Teng Liu
+  (@27rabbitlt).
+
+* Fix parsing of simple complex numbers.  Now, `ne.evaluate('1.5j')` works.
+  Thanks to Teng Liu (@27rabbitlt).
+
+* Fixes for upcoming NumPy 2.0:
+
+  * Replace npy_cdouble with C++ complex. Thanks to Teng Liu (@27rabbitlt).
+  * Add NE_MAXARGS for future numpy change NPY_MAXARGS. Now it is set to 64
+    to match NumPy 2.0 value. Thanks to Teng Liu (@27rabbitlt).
+
 
 Changes from 2.8.6 to 2.8.7
 ---------------------------
