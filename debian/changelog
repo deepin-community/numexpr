@@ -1,3 +1,46 @@
+numexpr (2.10.1-2) unstable; urgency=medium
+
+  * debian/patches:
+    - New 0002-Fix-test_max_threads_unset.patch (Closes: #1074145).
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Mon, 24 Jun 2024 18:25:24 +0000
+
+numexpr (2.10.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Drop 0002-Fix-nthreads-test.patch, applied upstream.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 23 Jun 2024 15:40:01 +0000
+
+numexpr (2.10.0-2) unstable; urgency=medium
+
+  * debian/patches:
+    - New 0002-Fix-nthreads-test.patch.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 04 May 2024 07:15:05 +0000
+
+numexpr (2.10.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - New 0001-Compatibility-with-numpy-2.0.patch.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 06 Apr 2024 15:10:42 +0000
+
+numexpr (2.9.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update dates in d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 27 Jan 2024 10:24:15 +0000
+
+numexpr (2.8.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 16 Dec 2023 07:21:47 +0000
+
 numexpr (2.8.7-1) unstable; urgency=medium
 
   * New upstream release.

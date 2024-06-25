@@ -47,6 +47,12 @@
 #define AVAILABLE(Haystack, Haystack_Len, J, Needle_Len)   \
   ((Haystack_Len) >= (J) + (Needle_Len))
 
+// To allow building with NumPy<2 locally define the new NumPy macros:
+#if NPY_ABI_VERSION < 0x02000000
+  #define PyDataType_ELSIZE(descr) ((descr)->elsize)
+  #define PyDataType_SET_ELSIZE(descr, size) (descr)->elsize = size
+#endif
+
 #include "str-two-way.hpp"
 
 #ifdef DEBUG
@@ -246,7 +252,7 @@ FuncDDDPtr_vml functions_ddd_vml[] = {
 
 
 
-typedef void (*FuncCCPtr)(npy_cdouble*, npy_cdouble*);
+typedef void (*FuncCCPtr)(std::complex<double>*, std::complex<double>*);
 
 FuncCCPtr functions_cc[] = {
 #define FUNC_CC(fop, s, f, ...) f,
@@ -295,7 +301,7 @@ FuncCCPtr_vml functions_cc_vml[] = {
 #endif
 
 
-typedef void (*FuncCCCPtr)(npy_cdouble*, npy_cdouble*, npy_cdouble*);
+typedef void (*FuncCCCPtr)(std::complex<double>*, std::complex<double>*, std::complex<double>*);
 
 FuncCCCPtr functions_ccc[] = {
 #define FUNC_CCC(fop, s, f) f,
@@ -980,10 +986,10 @@ run_interpreter_const(NumExprObject *self, char *output, int *pc_error)
 PyObject *
 NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
 {
-    PyArrayObject *operands[NPY_MAXARGS];
-    PyArray_Descr *dtypes[NPY_MAXARGS], **dtypes_tmp;
+    PyArrayObject *operands[NE_MAXARGS];
+    PyArray_Descr *dtypes[NE_MAXARGS], **dtypes_tmp;
     PyObject *tmp, *ret;
-    npy_uint32 op_flags[NPY_MAXARGS];
+    npy_uint32 op_flags[NE_MAXARGS];
     NPY_CASTING casting = NPY_SAFE_CASTING;
     NPY_ORDER order = NPY_KEEPORDER;
     unsigned int i, n_inputs;
@@ -997,8 +1003,8 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
     bool reduction_outer_loop = false, need_output_buffering = false, full_reduction = false;
 
     // To specify axes when doing a reduction
-    int op_axes_values[NPY_MAXARGS][NPY_MAXDIMS],
-         op_axes_reduction_values[NPY_MAXARGS];
+    int op_axes_values[NE_MAXARGS][NPY_MAXDIMS],
+         op_axes_reduction_values[NE_MAXARGS];
     int *op_axes_ptrs[NPY_MAXDIMS];
     int oa_ndim = 0;
     int **op_axes = NULL;
@@ -1029,7 +1035,7 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
     memset(operands, 0, sizeof(operands));
     memset(dtypes, 0, sizeof(dtypes));
 
-    if (kwds) {
+    if (kwds && PyDict_Size(kwds) > 0) {
         tmp = PyDict_GetItemString(kwds, "casting"); // borrowed ref
         if (tmp != NULL && !PyArray_CastingConverter(tmp, &casting)) {
             return NULL;
@@ -1203,7 +1209,7 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
                 Py_INCREF(dtypes[0]);
             } else {  // constant, like in '"foo"'
                 dtypes[0] = PyArray_DescrNewFromType(NPY_STRING);
-                dtypes[0]->elsize = (int)self->memsizes[1];
+                PyDataType_SET_ELSIZE(dtypes[0], (npy_intp)self->memsizes[1]);
             }  // no string temporaries, so no third case
         }
         if (dtypes[0] == NULL) {
@@ -1449,7 +1455,7 @@ NumExpr_run(NumExprObject *self, PyObject *args, PyObject *kwds)
     /* Get the sizes of all the operands */
     dtypes_tmp = NpyIter_GetDescrArray(iter);
     for (i = 0; i < n_inputs+1; ++i) {
-        self->memsizes[i] = dtypes_tmp[i]->elsize;
+        self->memsizes[i] = PyDataType_ELSIZE(dtypes_tmp[i]);
     }
 
     /* For small calculations, just use 1 thread */

@@ -265,7 +265,7 @@ class Immediate(Register):
 
 _flow_pat = r'[\;\[\:]'
 _dunder_pat = r'(^|[^\w])__[\w]+__($|[^\w])'
-_attr_pat = r'\.\b(?!(real|imag|\d*[eE]?[+-]?\d+)\b)'
+_attr_pat = r'\.\b(?!(real|imag|(\d*[eE]?[+-]?\d+)|\d*j)\b)'
 _blacklist_re = re.compile(f'{_flow_pat}|{_dunder_pat}|{_attr_pat}')
 
 def stringToExpression(s, types, context, sanitize: bool=True):
@@ -275,9 +275,11 @@ def stringToExpression(s, types, context, sanitize: bool=True):
     # parse into its homebrew AST. This is to protect the call to `eval` below.
     # We forbid `;`, `:`. `[` and `__`, and attribute access via '.'.
     # We cannot ban `.real` or `.imag` however...
+    # We also cannot ban `.\d*j`, where `\d*` is some digits (or none), e.g. 1.5j, 1.j
     if sanitize:
         no_whitespace = re.sub(r'\s+', '', s)
-        if _blacklist_re.search(no_whitespace) is not None:
+        skip_quotes = re.sub(r'(\'[^\']*\')', '', no_whitespace)
+        if _blacklist_re.search(skip_quotes) is not None:
             raise ValueError(f'Expression {s} has forbidden control characters.')
     
     old_ctx = expressions._context.get_current_context()
@@ -765,7 +767,7 @@ def getArguments(names, local_dict=None, global_dict=None, _frame_depth: int=2):
         # If we generated local_dict via an explicit reference to f_locals,
         # clear the dict to prevent creating extra ref counts in the caller's scope
         # See https://github.com/pydata/numexpr/issues/310
-        if clear_local_dict:
+        if clear_local_dict and hasattr(local_dict, 'clear'):
             local_dict.clear()
 
     return arguments
@@ -970,11 +972,12 @@ def evaluate(ex: str,
                  out=out, order=order, casting=casting, 
                  _frame_depth=_frame_depth, sanitize=sanitize, **kwargs)
     if e is None:
-        return re_evaluate(local_dict=local_dict, _frame_depth=_frame_depth)
+        return re_evaluate(local_dict=local_dict, global_dict=global_dict, _frame_depth=_frame_depth)
     else:
         raise e
     
 def re_evaluate(local_dict: Optional[Dict] = None, 
+                global_dict: Optional[Dict] = None,
                 _frame_depth: int=2) -> numpy.ndarray:
     """
     Re-evaluate the previous executed array expression without any check.
@@ -998,7 +1001,7 @@ def re_evaluate(local_dict: Optional[Dict] = None,
     except KeyError:
         raise RuntimeError("A previous evaluate() execution was not found, please call `validate` or `evaluate` once before `re_evaluate`")
     argnames = _numexpr_last['argnames']
-    args = getArguments(argnames, local_dict, _frame_depth=_frame_depth)
+    args = getArguments(argnames, local_dict, global_dict, _frame_depth=_frame_depth)
     kwargs = _numexpr_last['kwargs']
     with evaluate_lock:
         return compiled_ex(*args, **kwargs)
