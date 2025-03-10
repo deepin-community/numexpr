@@ -1,3 +1,12 @@
+numexpr (2.10.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standards version bumped to 4.7.0, no changes.
+  * debian/patches:
+    - Drop 0002-Fix-test_max_threads_unset.patch, applied upstream.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 27 Nov 2024 07:09:51 +0000
+
 numexpr (2.10.1-2) unstable; urgency=medium
 
   * debian/patches:

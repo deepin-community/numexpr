@@ -1,29 +1,28 @@
 =========================
-Announcing NumExpr 2.10.1
+Announcing NumExpr 2.10.2
 =========================
 
 Hi everyone,
 
-NumExpr 2.10.1 continues to establize the support for NumPy 2.0.0.
-Also, the default number of 'safe' threads has been upgraded to 16
-(instead of previous 8). Finally, preliminary support for Python 3.13;
-thanks to Karolina Surma.
+NumExpr 2.10.2 provides wheels for Python 2.13 for first time.
+Also, there is better support for CPUs that do not have a power
+of 2 number of cores.  Finally, numexpr is allowed to run with
+the multithreading package in Python.
 
 Project documentation is available at:
 
 http://numexpr.readthedocs.io/
 
-Changes from 2.9.0 to 2.10.0
-----------------------------
+Changes from 2.10.1 to 2.10.2
+-----------------------------
 
-* Support for NumPy 2.0.0.  This is still experimental, so please
-  report any issues you find.  Thanks to Clément Robert and Thomas
-  Caswell for the work.
+* Better support for CPUs that do not have a power of 2 number of
+  cores.  See #479 and #490.  Thanks to @avalentino.
 
-* Avoid erroring when OMP_NUM_THREADS is empty string.  Thanks to
-  Patrick Hoefler.
+* Allow numexpr to run with the multithreading package in Python.
+  See PR #496.  Thanks to @emmaai
 
-* Do not warn if OMP_NUM_THREAD set.
+* Wheels for Python 3.13 are now provided.
 
 What's Numexpr?
 ---------------
