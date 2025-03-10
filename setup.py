@@ -31,6 +31,10 @@ with open('numexpr/version.py', 'w') as fh:
         pass
     fh.write("platform_machine = '%s'\n" % platform.machine())
 
+# Read the contents of your README file
+with open('README.rst', encoding='utf-8') as f:
+    long_description = f.read()
+
 lib_dirs = []
 inc_dirs = [np.get_include()]
 libs = []  # Pre-built libraries ONLY, like python36.so
@@ -101,6 +105,8 @@ def setup_package():
 
     metadata = dict(
         version=version,
+        long_description=long_description,
+        long_description_content_type='text/x-rst',
         install_requires=requirements,
         libraries=clibs,
         ext_modules=[
